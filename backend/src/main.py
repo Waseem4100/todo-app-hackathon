@@ -1,11 +1,16 @@
+import sys
+import os
+# Add the parent directory to the Python path to allow relative imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.api.routes import auth, todos
+from api.routes.auth import router as auth_router
+from api.routes.todos import router as todos_router
 from sqlmodel import SQLModel
-from src.database.database import engine
-from src.models.user import User
-from src.models.todo import Todo
-import os
+from database.database import engine
+from models.user import User
+from models.todo import Todo
 
 app = FastAPI(title="Todo Management API", version="1.0.0")
 
@@ -19,8 +24,8 @@ app.add_middleware(
 )
 
 # Include API routes
-app.include_router(auth.router, prefix="/auth", tags=["authentication"])
-app.include_router(todos.router, prefix="/todos", tags=["todos"])
+app.include_router(auth_router, prefix="/auth", tags=["authentication"])
+app.include_router(todos_router, prefix="/todos", tags=["todos"])
 
 @app.get("/")
 def read_root():

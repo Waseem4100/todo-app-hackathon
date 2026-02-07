@@ -1,6 +1,7 @@
+'use client';
+
 import React from 'react';
 import { Todo, TodoApiService } from '../services/api';
-import '../styles/global.css';
 
 interface TodoItemProps {
   todo: Todo;

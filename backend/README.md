@@ -1,66 +1,48 @@
-# Todo App Backend
+---
+title: Todo Management API
+emoji: 📝
+colorFrom: blue
+colorTo: green
+sdk: docker
+sdk_version: "latest"
+python_version: "3.11"
+app_file: main.py
+pinned: false
+---
 
-This is the backend for the Todo Management System built with FastAPI and Python.
+# Todo Management API
 
-## Local Development
+This is a FastAPI-based Todo Management API deployed on Hugging Face Spaces.
 
-To run the backend locally:
+## API Features
 
-1. Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+- User authentication and registration
+- Todo creation, reading, updating, and deletion (CRUD operations)
+- Secure JWT-based authentication
+- SQLModel-based database operations
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+## Endpoints
 
-3. Set up environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
+- `GET /` - Health check endpoint
+- `/auth/` - Authentication routes (register, login, refresh token)
+- `/todos/` - Todo management routes (create, read, update, delete)
 
-4. Run the application:
-```bash
-uvicorn src.main:app --reload --port 8000
-```
+## Tech Stack
 
-## Environment Variables
+- FastAPI - Modern, fast web framework for building APIs
+- SQLModel - SQL databases with Python objects
+- PostgreSQL - Production database
+- Alembic - Database migration tool
+- Pydantic - Data validation and settings management
 
-The following environment variables are required:
+## Configuration
 
-```
-DATABASE_URL=postgresql://username:password@localhost/dbname
-SECRET_KEY=your-secret-key-change-in-production
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-```
+The application is configured to run with:
+- Python 3.11
+- Uvicorn ASGI server
+- Docker containerization
+- Automatic HTTPS via Hugging Face Spaces
 
-## Deployment to Railway
+## Note
 
-This application is configured for deployment to Railway. To deploy:
-
-1. Connect your Railway account to your GitHub repository
-2. Create a new Railway project
-3. Select this repository
-4. Railway will automatically detect this is a Python app and build it
-5. Add the required environment variables in the Railway dashboard
-6. Deploy!
-
-### Required Environment Variables on Railway:
-- `DATABASE_URL`: PostgreSQL connection string (can use Railway's managed PostgreSQL)
-- `SECRET_KEY`: Secret key for JWT tokens (generate a strong random key)
-
-## API Documentation
-
-Once deployed, API documentation will be available at `/docs` endpoint.
-
-## Database Setup
-
-The application uses SQLModel with PostgreSQL. On Railway:
-1. Add a PostgreSQL addon to your project
-2. Use the automatically generated DATABASE_URL environment variable
-3. The application will automatically create tables on startup
+This backend has been fixed to resolve a previous deployment issue where the `ondelete` parameter was incorrectly used in SQLModel's Field function.

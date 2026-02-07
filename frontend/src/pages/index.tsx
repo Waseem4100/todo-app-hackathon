@@ -1,14 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Layout from '../components/Layout';
+import dynamic from 'next/dynamic';
 import AuthService from '../services/auth';
-import '../styles/global.css';
+
+// Dynamically import Layout with no SSR to avoid localStorage issues
+const DynamicLayout = dynamic(() => import('../components/Layout'), {
+  ssr: false,
+  loading: () => (
+    <div className="layout">
+      <nav className="navbar">
+        <div className="nav-container">
+          <Link href="/" className="nav-brand">
+            Todo App
+          </Link>
+          <div className="nav-links">
+            <Link href="/login" className="nav-link">
+              Login
+            </Link>
+            <Link href="/signup" className="nav-link">
+              Sign Up
+            </Link>
+          </div>
+        </div>
+      </nav>
+      <main className="main-content">
+        <div>Loading...</div>
+      </main>
+      <footer className="footer">
+        <div className="footer-container">
+          <p>&copy; 2026 Todo App. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  ),
+});
 
 const HomePage: React.FC = () => {
-  const isLoggedIn = AuthService.isAuthenticated();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (AuthService.isBrowser()) {
+      setIsLoggedIn(AuthService.isAuthenticated());
+    }
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return <DynamicLayout>{null}</DynamicLayout>;
+  }
 
   return (
-    <Layout>
+    <DynamicLayout>
       <div className="home-page">
         <div className="hero-section">
           <h1>Welcome to Todo App</h1>
@@ -46,7 +89,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </DynamicLayout>
   );
 };
 

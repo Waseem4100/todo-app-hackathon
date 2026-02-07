@@ -1,6 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
 import { CreateTodoData, TodoApiService } from '../services/api';
-import '../styles/global.css';
 
 interface TodoFormProps {
   onAddTodo: (todo: any) => void;

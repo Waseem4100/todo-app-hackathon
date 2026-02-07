@@ -26,52 +26,104 @@ class AuthService {
   private static readonly BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
   private static readonly AUTH_TOKEN_KEY = 'auth_token';
 
+  // Helper method to check if running in browser
+  static isBrowser(): boolean {
+    return typeof window !== 'undefined';
+  }
+
   // Register a new user
   static async register(userData: RegisterData): Promise<LoginResponse> {
+    console.log(`Attempting to register user with email: ${userData.email}`);
+    console.log(`Using API base URL: ${this.BASE_URL}`);
+    
     try {
       const response = await axios.post(`${this.BASE_URL}/auth/register`, userData);
+      console.log('Registration response received:', response.status);
       const { access_token, user } = response.data;
 
-      // Store the token in localStorage
-      localStorage.setItem(this.AUTH_TOKEN_KEY, access_token);
+      // Store the token in localStorage (only in browser)
+      if (this.isBrowser()) {
+        localStorage.setItem(this.AUTH_TOKEN_KEY, access_token);
+        console.log('Token stored in localStorage');
+      }
 
       return { access_token, token_type: 'bearer', user };
     } catch (error: any) {
-      throw new Error(error.response?.data?.detail || 'Registration failed');
+      console.error('Registration error details:', {
+        message: error.message,
+        response: error.response,
+        request: error.request,
+        config: error.config
+      });
+      
+      let errorMessage = 'Registration failed';
+      if (error.response) {
+        errorMessage = error.response.data?.detail || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'Network error: Unable to reach the server. Please check your connection.';
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+      
+      throw new Error(errorMessage);
     }
   }
 
   // Login user
   static async login(email: string, password: string): Promise<LoginResponse> {
+    console.log(`Attempting to login user with email: ${email}`);
+    console.log(`Using API base URL: ${this.BASE_URL}`);
+    
     try {
       const response = await axios.post(`${this.BASE_URL}/auth/login`, {
         email,
         password,
-      }, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      }); // Send as JSON instead of form-encoded
 
+      console.log('Login response received:', response.status);
       const { access_token, user } = response.data;
 
-      // Store the token in localStorage
-      localStorage.setItem(this.AUTH_TOKEN_KEY, access_token);
+      // Store the token in localStorage (only in browser)
+      if (this.isBrowser()) {
+        localStorage.setItem(this.AUTH_TOKEN_KEY, access_token);
+        console.log('Token stored in localStorage after login');
+      }
 
       return { access_token, token_type: 'bearer', user };
     } catch (error: any) {
-      throw new Error(error.response?.data?.detail || 'Login failed');
+      console.error('Login error details:', {
+        message: error.message,
+        response: error.response,
+        request: error.request,
+        config: error.config
+      });
+
+      let errorMessage = 'Login failed';
+      if (error.response) {
+        errorMessage = error.response.data?.detail || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'Network error: Unable to reach the server. Please check your connection.';
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+
+      throw new Error(errorMessage);
     }
   }
 
   // Logout user
   static logout(): void {
-    localStorage.removeItem(this.AUTH_TOKEN_KEY);
+    if (this.isBrowser()) {
+      localStorage.removeItem(this.AUTH_TOKEN_KEY);
+    }
   }
 
   // Get current user token
   static getToken(): string | null {
-    return localStorage.getItem(this.AUTH_TOKEN_KEY);
+    if (this.isBrowser()) {
+      return localStorage.getItem(this.AUTH_TOKEN_KEY);
+    }
+    return null;
   }
 
   // Check if user is authenticated

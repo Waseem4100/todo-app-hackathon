@@ -10,7 +10,7 @@ class TodoBase(SQLModel):
 
 class Todo(TodoBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    user_id: uuid.UUID = Field(foreign_key="user.id", ondelete="CASCADE")
+    user_id: uuid.UUID = Field(foreign_key="user.id")  # Removed ondelete parameter as it's not supported in SQLModel
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

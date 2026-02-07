@@ -1,8 +1,9 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import TodoItem from './TodoItem';
 import TodoForm from './TodoForm';
 import { Todo, TodoApiService } from '../services/api';
-import '../styles/global.css';
 
 const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
